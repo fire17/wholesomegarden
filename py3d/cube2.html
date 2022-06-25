@@ -1,0 +1,178 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+        <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.js"></script>
+        <script src="https://unpkg.com/three@0.87.1/examples/js/controls/OrbitControls.js"></script>
+        <py-env>
+            <!-- - xo-gd -->
+        </py-env>
+    </head>
+    <body>
+        <video id="video" playsinline webkit-playsinline muted loop autoplay width="320" height="240" src="https://www.onirikal.com/videos/mp4/skrillex.mp4"
+        style="display: none;"
+        >
+    </video>
+        <h1>three.js with pyscript </h1>
+
+        <py-script>
+from pyodide import create_proxy
+<!-- from xo import * -->
+<!-- from numpy import * -->
+<!-- from pythreejs import * -->
+from math import *
+from random import random
+<!-- 
+# Reduce repo churn for examples with embedded state:
+from pythreejs._example_helper import use_example_model_ids
+use_example_model_ids() -->
+
+from js import THREE, window, document
+from random import random
+
+scene = THREE.Scene.new();
+scene.background = "#00ff00"
+camera = THREE.PerspectiveCamera.new(75, window.innerWidth / window.innerHeight, 0.1, 1000)
+
+renderer = THREE.WebGLRenderer.new(alpha=True)
+renderer.setSize(window.innerWidth, window.innerHeight)
+
+<!-- geometry = THREE.BoxGeometry.new() -->
+geometry = THREE.SphereGeometry.new( 15, 32, 16 )
+geometry2 = THREE.SphereGeometry.new( 15, 32, 16 )
+<!-- geometry2 = THREE.SphereGeometry.new( 14.95, 33, 17 ) -->
+<!-- geometry3 = THREE.SphereGeometry.new( 14.89, 33, 17 ) -->
+geometry3 = THREE.SphereGeometry.new( 14.92, 33, 35 )
+material = THREE.MeshBasicMaterial.new(color="#fa10fa")
+material = THREE.MeshBasicMaterial.new(color="#00fffa")
+<!-- material = THREE.MeshBasicMaterial.new(color="#af55ff") -->
+material = THREE.MeshBasicMaterial.new(color="#9900ff")
+<!-- material = THREE.MeshBasicMaterial.new(color="#ffffff") -->
+material2 = THREE.MeshBasicMaterial.new(color="#ffffff")
+<!-- material2 = THREE.MeshBasicMaterial.new(color="#00ffff") -->
+<!-- texture = THREE.TextureLoader.new().load("./eo_base_2020_clean_720x360.jpg") -->
+loader = THREE.TextureLoader.new()
+loader.crossOrigin = "";
+<!-- texture = loader.load("http://mrdoob.github.io/three.js/examples/textures/crate.gif") -->
+<!-- texture = loader.load("https://images.pexels.com/photos/2832432/pexels-photo-2832432.png?auto=compress&cs=tinysrgb&w=1600") -->
+texture = loader.load("https://images.pexels.com/photos/2832432/pexels-photo-2832432.png?auto=compress&cs=tinysrgb&w=100")
+<!-- texturex = loader.load("https://images.pexels.com/photos/2832432/pexels-photo-283x2432.png?auto=compress&cs=tinysrgb&w=100") -->
+<!-- texturex = loader.load("https://images.all-free-download.com/images/graphicwebp/gold_textured_background_hd_picture_1_169656.webp") -->
+<!-- texturex = loader.load("https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Gold_Foil_Metallic_Texture_Free_Creative_Commons_%286962328289%29.jpg/1599px-Gold_Foil_Metallic_Texture_Free_Creative_Commons_%286962328289%29.jpg?20150528133633") -->
+texturex = loader.load("https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Gold_Foil_Metallic_Texture_Free_Creative_Commons_%286962328289%29.jpg/1599px-Gold_Foil_Metallic_Texture_Free_Creative_Commons_%286962328289%29.jpg?20150528133633")
+<!-- texture = loader.load("https://64.media.tumblr.com/2e7066e989d543890f5b1ec83529eef9/tumblr_pi70q0w6Tr1xf5evlo1_500.gif") -->
+
+
+video = document.getElementById("video");
+video.onloadeddata = video.play
+
+<!-- texture = THREE.VideoTexture.new('''https://www.onirikal.com/videos/mp4/skrillex.mp4''') -->
+<!-- texture = THREE.VideoTexture.new(video) -->
+<!-- texture = THREE.VideoTexture.new(video) -->
+
+texture.wrapS = THREE.RepeatWrapping;
+texture.wrapT = THREE.RepeatWrapping;
+texture.repeat.set( 1, 80 );
+
+withTexture = False
+withTexture = True
+if withTexture:
+    console.log("XXXXXXXXX",renderer.clearColor)
+    material.map = texture
+    material2.map = texturex
+cube = THREE.Mesh.new( geometry, material )
+cube2 = THREE.Mesh.new( geometry2, material )
+cubeB = THREE.Mesh.new(     geometry3   , material2 )
+cubeB2 = THREE.Mesh.new(    geometry3  , material2 )
+scene.add( cube )
+scene.add( cube2 )
+scene.add( cubeB )
+scene.add( cubeB2 )
+
+<!-- cubeB2.position.x   = 20
+cubeB2.position.y   = 20
+cubeB.position.x    = 20
+cubeB.position.y    = 20 -->
+
+controls = THREE.OrbitControls.new( camera, renderer.domElement );
+
+
+camera.position.z = 0.7
+camera.position.z = 100
+<!-- renderer.clearColor = "#ffffff" -->
+renderer.clearColor("#ffffff",True,True)
+renderer.render( scene, camera )
+c = 1
+<!-- def animate(*args):
+    window.requestAnimationFrame( create_proxy(animate) )
+    cube.rotation.x += 0.01
+    cube.rotation.y += 0.01
+    renderer.render( scene, camera ) -->
+    
+vecUp = 1
+
+def nextC(speed = 0.1):
+    speed = speed *0.024
+    <!-- speed = speed *0.035 -->
+    base, limit = 1, 190
+    global c, vecUp
+
+    if c >= limit:
+        vecUp = -2 * random()*0.1
+        
+    if c <= 0.9:
+        vecUp = 0.1 * random()*0.1
+        c = 1
+    c = c+1*vecUp
+    return ((c%200)/1)*speed+base
+
+cube.rotation.x += 0.77 
+cube.rotation.y += 0.77 
+cube.rotation.z += 0.77 
+<!-- cube2.rotation.x += 2.97 
+cube2.rotation.y += 0.97 
+cube2.rotation.z += 2.97  -->
+cubeB.rotation.x += 0.57 
+cubeB.rotation.y += 0.57 
+cubeB.rotation.z += 0.57 
+cubeB2.rotation.x -= 0.57 
+cubeB2.rotation.y -= 0.57 
+cubeB2.rotation.z -= 0.57 
+def animate(*args):
+    global c
+    window.requestAnimationFrame( create_proxy(animate) )
+    <!-- cube.rotation.x += 0.01 -->
+    nc = nextC()
+    cube.rotation.y += nc*0.01
+    cube.rotation.y += nc*0.01
+    cube2.rotation.y += nc*0.01
+    cube2.rotation.y += nc*0.01
+    <!-- cube2.rotation.z += nc*0.01 -->
+    cubeB.rotation.y += nc*0.01
+    cubeB.rotation.y += nc*0.01
+    cubeB2.rotation.y += nc*0.01
+    cubeB2.rotation.y += nc*0.01
+    <!-- cube.position.x = cos(nc)*30
+    cube.position.y = sin(nc)*30
+    cube.position.z = tan(nc)*30
+    cube2.position.x = cos(nc)*30
+    cube2.position.y = sin(nc)*30
+    cube2.position.z = tan(nc)*30 -->
+
+    <!-- cube2.position.x = cos(nc)*30
+    cube2.position.y = sin(nc)*30
+    cube2.position.z = tan(nc)*30 -->
+    controls.update()
+    <!-- texture.repeat.set( nextC(nextC(.01))/100, nextC(0.001) ); -->
+    <!-- texture.repeat.set( nextC(0.001), nextC(0.001) ); -->
+    texture.repeat.set( nextC(0.02)/10, nextC(0.02)/10 );
+    <!-- texture.repeat.set( (nextC(0.3)/8)**2.1, (nextC(0.3)/(8*80))**2.1 ); -->
+    <!-- material.map = texture -->
+    renderer.render( scene, camera )
+
+animate()
+
+document.body.appendChild( renderer.domElement )
+        </py-script>
+    </body>
+</html>
